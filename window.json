@@ -1,10 +1,10 @@
 {
-    "title": "Window title",
+    "title": "MISO - Introducción a videojuegos",
     "size": {
-        "x":640,
-        "y":360
+        "w": 640,
+        "h": 360
     },
-    "color": {
+    "bg_color": {
         "r": 25,
         "g": 25,
         "b": 25

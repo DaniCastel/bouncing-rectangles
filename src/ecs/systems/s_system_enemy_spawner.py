@@ -1,4 +1,5 @@
-import json
+from random import randrange
+import random
 import pygame
 import esper
 from src.create.prefabs_creator import create_square
@@ -19,5 +20,17 @@ def system_enemy_spawner(ecs_world: esper.World, delta_time, enemies):
                 enemy = enemies[event.enemy_type]
                 color = enemy["color"]
 
+                velocity_x = randrange(
+                    enemy["velocity_min"], enemy["velocity_max"])*positive_or_negative()
+                velocity_y = randrange(
+                    enemy["velocity_min"], enemy["velocity_max"])*positive_or_negative()
+
                 create_square(ecs_world, pygame.Vector2(enemy["size"]["x"], enemy["size"]["y"]), pygame.Vector2(
-                    event.position["x"], event.position["y"]), pygame.Vector2(enemy["velocity_min"], enemy["velocity_max"]), pygame.Color(color["r"], color["g"], color["b"]))
+                    event.position["x"], event.position["y"]), pygame.Vector2(velocity_x, velocity_y), pygame.Color(color["r"], color["g"], color["b"]))
+
+
+def positive_or_negative():
+    if random.random() < 0.5:
+        return 1
+    else:
+        return -1

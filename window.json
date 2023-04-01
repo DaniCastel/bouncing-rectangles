@@ -1,0 +1,13 @@
+{
+    "title": "Window title",
+    "size": {
+        "x":640,
+        "y":360
+    },
+    "color": {
+        "r": 25,
+        "g": 25,
+        "b": 25
+    },
+    "framerate": 60
+}

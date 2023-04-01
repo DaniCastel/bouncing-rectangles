@@ -1,3 +1,4 @@
+import json
 import pygame
 
 import esper
@@ -12,13 +13,24 @@ from src.ecs.systems.s_rendering import system_rendering
 
 class GameEngine:
     def __init__(self) -> None:
+
+        window_file = open('window.json')
+
+        # returns JSON object as
+        # a dictionary
+        window_config = json.load(window_file)
+        self.window_config = window_config
+
         pygame.init()
-        self.screen = pygame.display.set_mode((640, 360), pygame.SCALED)
+        pygame.display.set_caption(window_config["title"])
+        self.screen = pygame.display.set_mode(
+            (window_config["size"]["x"], window_config["size"]["y"]), pygame.SCALED)
         self.clock = pygame.time.Clock()
+
         self.is_running = False
-        self.framerate = 60
+        self.framerate = window_config["framerate"]
         self.delta_time = 0
-        # mundo que maneja los componentes y estructuras, agregar y borrar entidades etc
+        # # mundo que maneja los componentes y estructuras, agregar y borrar entidades etc
         self.ecs_world = esper.World()
 
     def run(self) -> None:
@@ -70,7 +82,9 @@ class GameEngine:
         system_screen_bounce(self.ecs_world, self.screen)
 
     def _draw(self):
-        self.screen.fill((0, 200, 128))  # se indica un color
+        color = self.window_config["color"]
+        self.screen.fill((color["r"], color["g"], color["b"])
+                         )  # se indica un color
         # sistema de dibujo
         system_rendering(self.ecs_world, self.screen)
         pygame.display.flip()  # presenta la pantalla

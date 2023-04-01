@@ -14,15 +14,12 @@ def create_square(
 
     square_entity = ecs_world.create_entity()
     # normalmente hay un componente por entidad
-    ecs_world.add_component(
-        square_entity, CSurface(size, color))
+    ecs_world.add_component(square_entity, CSurface(size, color))
 
     # pero vamos a crear otro componente
-    ecs_world.add_component(
-        square_entity, CTransform(position))
+    ecs_world.add_component(square_entity, CTransform(position))
 
-    ecs_world.add_component(
-        square_entity, CVelocity(velocity))
+    ecs_world.add_component(square_entity, CVelocity(velocity))
 
     # velocity_square = pygame.Vector2(
     #     100, 100)  # 100px vel en x y 100px en Y

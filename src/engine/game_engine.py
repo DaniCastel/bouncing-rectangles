@@ -3,12 +3,14 @@ import pygame
 
 import esper
 from src.create.prefabs_creator import create_square
+from src.ecs.components.c_enemy_spawner import CEnemySpawner
 from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_velocity import CVelocity
 from src.ecs.systems.s_bounce import system_screen_bounce
 from src.ecs.systems.s_movement import system_movement
 from src.ecs.systems.s_rendering import system_rendering
+from src.ecs.systems.s_system_enemy_spawner import system_enemy_spawner
 
 
 class GameEngine:
@@ -26,7 +28,6 @@ class GameEngine:
         self.screen = pygame.display.set_mode(
             (window_config["size"]["x"], window_config["size"]["y"]), pygame.SCALED)
         self.clock = pygame.time.Clock()
-
         self.is_running = False
         self.framerate = window_config["framerate"]
         self.delta_time = 0
@@ -44,8 +45,18 @@ class GameEngine:
         self._clean()
 
     def _create(self):
-        create_square(self.ecs_world, pygame.Vector2(50, 50), pygame.Vector2(
-            150, 100), pygame.Vector2(100, 100), pygame.Color(255, 255, 100))
+        spawn_entity = self.ecs_world.create_entity()
+        self.ecs_world.add_component(spawn_entity, CEnemySpawner())
+
+        # pygame.time.set_timer(print("evento"), 10)
+        enemies_file = open('enemies.json')
+        enemies = json.load(enemies_file)
+
+        self.enemies = enemies
+        # for enemy in enemies:
+        #     color = enemies[enemy]["color"]
+        #     create_square(self.ecs_world, pygame.Vector2(enemies[enemy]["size"]["x"], enemies[enemy]["size"]["y"]), pygame.Vector2(
+        #         0, 0), pygame.Vector2(enemies[enemy]["velocity_min"], enemies[enemy]["velocity_max"]), pygame.Color(color["r"], color["g"], color["b"]))
 
         # self.velocity_square = pygame.Vector2(
         #     100, 100)  # 100px vel en x y 100px en Y
@@ -77,7 +88,11 @@ class GameEngine:
                 self.is_running = False
 
     def _update(self):
+
+        # print(pygame.time.get_ticks()/1000)
         # modificamos la velocidad
+        # agregamos enemigos
+        system_enemy_spawner(self.ecs_world, self.delta_time, self.enemies)
         system_movement(self.ecs_world, self.delta_time)
         system_screen_bounce(self.ecs_world, self.screen)
 

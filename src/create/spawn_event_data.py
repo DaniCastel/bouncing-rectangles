@@ -6,3 +6,4 @@ class SpawnEventData:
         self.position = position
         self.enemy_type = enemy_type
         self.time = time
+        self.already_created = False

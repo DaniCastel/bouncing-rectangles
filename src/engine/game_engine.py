@@ -26,7 +26,7 @@ class GameEngine:
         pygame.init()
         pygame.display.set_caption(window_config["title"])
         self.screen = pygame.display.set_mode(
-            (window_config["size"]["x"], window_config["size"]["y"]), pygame.SCALED)
+            (window_config["size"]["w"], window_config["size"]["h"]), pygame.SCALED)
         self.clock = pygame.time.Clock()
         self.is_running = False
         self.framerate = window_config["framerate"]
@@ -37,6 +37,7 @@ class GameEngine:
     def run(self) -> None:
         self._create()
         self.is_running = True
+        self.start_time = pygame.time.get_ticks()
         while self.is_running:
             self._calculate_time()
             self._process_events()
@@ -92,12 +93,13 @@ class GameEngine:
         # print(pygame.time.get_ticks()/1000)
         # modificamos la velocidad
         # agregamos enemigos
-        system_enemy_spawner(self.ecs_world, self.delta_time, self.enemies)
+        system_enemy_spawner(self.ecs_world, self.delta_time,
+                             self.enemies, self.start_time)
         system_movement(self.ecs_world, self.delta_time)
         system_screen_bounce(self.ecs_world, self.screen)
 
     def _draw(self):
-        color = self.window_config["color"]
+        color = self.window_config["bg_color"]
         self.screen.fill((color["r"], color["g"], color["b"])
                          )  # se indica un color
         # sistema de dibujo

@@ -10,26 +10,31 @@ def create_square(
         size: pygame.Vector2,
         position: pygame.Vector2,
         velocity: pygame.Vector2,
-        color: pygame.Vector2):
+        color: pygame.Color):
 
     square_entity = ecs_world.create_entity()
-    # normalmente hay un componente por entidad
+
     ecs_world.add_component(square_entity, CSurface(size, color))
 
-    # pero vamos a crear otro componente
     ecs_world.add_component(square_entity, CTransform(position))
 
     ecs_world.add_component(square_entity, CVelocity(velocity))
 
-    # velocity_square = pygame.Vector2(
-    #     100, 100)  # 100px vel en x y 100px en Y
 
-    # self.square_position = pygame.Vector2(150, 100)
-    # size_square = pygame.Vector2(50, 50)
-    # color_square = pygame.Color(255, 255, 100)
+def create_player_square(
+        world: esper.World,
+        player_config: dict,
+        player_level_config: dict):
 
-    # creamos la superficie o textura y pide un tamaño de coordenada
-    # self.surface_square = pygame.Surface(size_square)
-
-    # es igual que lo que indicamos en draw
-    # self.surface_square.fill(color_square)
+    size = pygame.Vector2(
+        player_config["size"]["x"],
+        player_config["size"]["y"])
+    color = pygame.Color(
+        player_config["color"]["r"],
+        player_config["color"]["g"],
+        player_config["color"]["b"])
+    position = pygame.Vector2(
+        player_level_config["position"]["x"] - (size.x / 2),
+        player_level_config["position"]["y"] - (size.y / 2))
+    velocity = pygame.Vector2(0, 0)
+    create_square(world, size, position, velocity, color)

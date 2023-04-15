@@ -2,7 +2,7 @@ import json
 import pygame
 
 import esper
-from src.create.prefabs_creator import create_square
+from src.create.prefabs_creator import create_player_square, create_square
 from src.ecs.components.c_enemy_spawner import CEnemySpawner
 from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
@@ -15,24 +15,28 @@ from src.ecs.systems.s_system_enemy_spawner import system_enemy_spawner
 
 class GameEngine:
     def __init__(self) -> None:
-
-        window_file = open('window.json')
-
-        # returns JSON object as
-        # a dictionary
-        window_config = json.load(window_file)
-        self.window_config = window_config
+        self._load_config_files()
 
         pygame.init()
-        pygame.display.set_caption(window_config["title"])
+        pygame.display.set_caption(self.window_config["title"])
         self.screen = pygame.display.set_mode(
-            (window_config["size"]["w"], window_config["size"]["h"]), pygame.SCALED)
+            (self.window_config["size"]["w"], self.window_config["size"]["h"]), pygame.SCALED)
         self.clock = pygame.time.Clock()
         self.is_running = False
-        self.framerate = window_config["framerate"]
+        self.framerate = self.window_config["framerate"]
         self.delta_time = 0
         # # mundo que maneja los componentes y estructuras, agregar y borrar entidades etc
         self.ecs_world = esper.World()
+
+    def _load_config_files(self):
+        with open('window.json', encoding="utf-8") as window_file:
+            self.window_config = json.load(window_file)
+        with open('enemies.json', encoding="utf-8") as enemies_file:
+            self.enemies_config = json.load(enemies_file)
+        with open('level_01.json', encoding="utf-8") as level_file:
+            self.level_config = json.load(level_file)
+        with open('player.json', encoding="utf-8") as player_file:
+            self.player_config = json.load(player_file)
 
     def run(self) -> None:
         self._create()
@@ -46,6 +50,8 @@ class GameEngine:
         self._clean()
 
     def _create(self):
+        create_player_square(self.ecs_world, self.player_config,
+                             self.level_config["player_spawn"])
         spawn_entity = self.ecs_world.create_entity()
         self.ecs_world.add_component(spawn_entity, CEnemySpawner())
 
@@ -54,23 +60,6 @@ class GameEngine:
         enemies = json.load(enemies_file)
 
         self.enemies = enemies
-        # for enemy in enemies:
-        #     color = enemies[enemy]["color"]
-        #     create_square(self.ecs_world, pygame.Vector2(enemies[enemy]["size"]["x"], enemies[enemy]["size"]["y"]), pygame.Vector2(
-        #         0, 0), pygame.Vector2(enemies[enemy]["velocity_min"], enemies[enemy]["velocity_max"]), pygame.Color(color["r"], color["g"], color["b"]))
-
-        # self.velocity_square = pygame.Vector2(
-        #     100, 100)  # 100px vel en x y 100px en Y
-
-        # self.square_position = pygame.Vector2(150, 100)
-        # size_square = pygame.Vector2(50, 50)
-        # color_square = pygame.Color(255, 255, 100)
-
-        # creamos la superficie o textura y pide un tamaño de coordenada
-        # self.surface_square = pygame.Surface(size_square)
-
-        # es igual que lo que indicamos en draw
-        # self.surface_square.fill(color_square)
 
     def _calculate_time(self):
         # previamente creamos el reloj en el init

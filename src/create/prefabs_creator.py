@@ -85,6 +85,7 @@ def create_input_player(
     input_right = world.create_entity()
     input_up = world.create_entity()
     input_down = world.create_entity()
+    input_fire = world.create_entity()
 
     world.add_component(
         input_left,
@@ -104,4 +105,9 @@ def create_input_player(
     world.add_component(
         input_down,
         CInputCommand("PLAYER_DOWN", pygame.K_DOWN)
+    )
+
+    world.add_component(
+        input_fire,
+        CInputCommand("PLAYER_FIRE", pygame.MOUSEBUTTONDOWN)
     )

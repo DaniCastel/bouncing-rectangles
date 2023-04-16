@@ -145,7 +145,7 @@ class GameEngine:
             create_bullet_square(
                 self.ecs_world,
                 pygame.Vector2(
-                    self._player_component_transform.position.x -
+                    self._player_component_transform.position.x +
                     (size[0] / 2),
-                    self._player_component_transform.position.x - (size[1] / 2)),
+                    self._player_component_transform.position.y + (size[1] / 2)),
                 self.bullet_config)

@@ -1,3 +1,4 @@
+import math
 import random
 import pygame
 import esper
@@ -117,7 +118,9 @@ def create_input_player(
 def create_bullet_square(
         world: esper.World,
         position: pygame.Vector2,
-        bullet_config: dict):
+        bullet_config: dict,
+        mouse_x: int,
+        mouse_y: int):
 
     size = pygame.Vector2(
         bullet_config["size"]["x"],
@@ -127,6 +130,15 @@ def create_bullet_square(
         bullet_config["color"]["g"],
         bullet_config["color"]["b"])
 
-    velocity = pygame.Vector2(bullet_config["velocity"])
+    distance_x = mouse_x - position.x
+    distance_y = mouse_y - position.y
+
+    angle = math.atan2(distance_y, distance_x)
+
+    velocity_x = bullet_config["velocity"] * math.cos(angle)
+    velocity_y = bullet_config["velocity"] * math.sin(angle)
+
+    velocity = pygame.Vector2(velocity_x, velocity_y)
+
     bullet_entity = create_square(world, size, position, velocity, color)
     world.add_component(bullet_entity, CTagBullet())

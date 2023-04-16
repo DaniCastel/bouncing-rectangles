@@ -137,17 +137,12 @@ class GameEngine:
                 self._player_component_velocity.velocity.y = 0
 
         if c_input.name == "PLAYER_FIRE":
-            print(self._player_component_transform.position.x)
-            print(self._player_component_transform.position.y)
-
             size = self._player_component_size.surface.get_size()
-
-            print(size)
-
+            mouse_x, mouse_y = pygame.mouse.get_pos()
             create_bullet_square(
                 self.ecs_world,
                 pygame.Vector2(
                     self._player_component_transform.position.x +
                     (size[0] / 2),
                     self._player_component_transform.position.y + (size[1] / 2)),
-                self.bullet_config)
+                self.bullet_config, mouse_x, mouse_y)

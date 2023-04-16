@@ -29,7 +29,7 @@ def create_square(
 def create_player_square(
         world: esper.World,
         player_config: dict,
-        player_level_config: dict):
+        player_level_config: dict) -> int:
 
     size = pygame.Vector2(
         player_config["size"]["x"],

@@ -2,12 +2,11 @@ import json
 import pygame
 
 import esper
-from src.create.prefabs_creator import create_enemy_spawner, create_player_square, create_square
-from src.ecs.components.c_enemy_spawner import CEnemySpawner
-from src.ecs.components.c_surface import CSurface
-from src.ecs.components.c_transform import CTransform
+from src.create.prefabs_creator import create_enemy_spawner, create_input_player, create_player_square, create_square
+from src.ecs.components.c_input_command import CInputCommand
 from src.ecs.components.c_velocity import CVelocity
 from src.ecs.systems.s_bounce import system_screen_bounce
+from src.ecs.systems.s_input_player import system_input_player
 from src.ecs.systems.s_movement import system_movement
 from src.ecs.systems.s_rendering import system_rendering
 from src.ecs.systems.s_system_enemy_spawner import system_enemy_spawner
@@ -55,7 +54,7 @@ class GameEngine:
         self._player_component_velocity = self.ecs_world.component_for_entity(
             self._player_entity, CVelocity)
         create_enemy_spawner(self.ecs_world, self.level_config)
-        pass
+        create_input_player(self.ecs_world)
 
     def _calculate_time(self):
         # previamente creamos el reloj en el init
@@ -70,6 +69,7 @@ class GameEngine:
 
     def _process_events(self):
         for event in pygame.event.get():  # get retorna una lista de eventos
+            system_input_player(self.ecs_world, event, self._do_action)
             if event.type == pygame.QUIT:  # cuando cierran la ventana
                 self.is_running = False
 
@@ -93,3 +93,6 @@ class GameEngine:
 
     def _clean(self):
         pygame.quit()  # limpia todo
+
+    def _do_action(self, c_input: CInputCommand):
+        print(c_input.name + " " + str(c_input.phase))

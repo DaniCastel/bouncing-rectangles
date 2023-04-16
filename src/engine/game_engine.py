@@ -2,13 +2,15 @@ import json
 import pygame
 
 import esper
-from src.create.prefabs_creator import create_enemy_spawner, create_input_player, create_player_square, create_square
+from src.create.prefabs_creator import create_bullet_square, create_enemy_spawner, create_input_player, create_player_square, create_square
 from src.ecs.components.c_input_command import CInputCommand, CommandPhase
+from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_velocity import CVelocity
 from src.ecs.systems.s_bounce import system_screen_bounce
 from src.ecs.systems.s_collision_player_enemy import system_collision_player_enemy
 from src.ecs.systems.s_input_player import system_input_player
 from src.ecs.systems.s_movement import system_movement
+from src.ecs.systems.s_player_limits import system_player_limits
 from src.ecs.systems.s_rendering import system_rendering
 from src.ecs.systems.s_system_enemy_spawner import system_enemy_spawner
 
@@ -37,6 +39,8 @@ class GameEngine:
             self.level_config = json.load(level_file)
         with open('assets/cfg/player.json', encoding="utf-8") as player_file:
             self.player_config = json.load(player_file)
+        with open('assets/cfg/bullet.json', encoding="utf-8") as bullet_file:
+            self.bullet_config = json.load(bullet_file)
 
     def run(self) -> None:
         self._create()
@@ -54,6 +58,8 @@ class GameEngine:
                                                    self.level_config["player_spawn"])
         self._player_component_velocity = self.ecs_world.component_for_entity(
             self._player_entity, CVelocity)
+        self._player_component_transform = self.ecs_world.component_for_entity(
+            self._player_entity, CTransform)
         create_enemy_spawner(self.ecs_world, self.level_config)
         create_input_player(self.ecs_world)
 
@@ -82,6 +88,8 @@ class GameEngine:
         )
         system_movement(self.ecs_world, self.delta_time)
         system_screen_bounce(self.ecs_world, self.screen)
+        system_player_limits(self.ecs_world, self.screen,
+                             self._player_component_velocity, self.player_config)
         system_collision_player_enemy(
             self.ecs_world, self._player_entity, self.level_config)
         self.ecs_world._clear_dead_entities()
@@ -103,22 +111,30 @@ class GameEngine:
             if c_input.phase == CommandPhase.START:
                 self._player_component_velocity.velocity.x -= self.player_config["input_velocity"]
             elif c_input.phase == CommandPhase.END:
-                self._player_component_velocity.velocity.x += self.player_config["input_velocity"]
+                self._player_component_velocity.velocity.x = 0
 
         if c_input.name == "PLAYER_RIGHT":
             if c_input.phase == CommandPhase.START:
                 self._player_component_velocity.velocity.x += self.player_config["input_velocity"]
             elif c_input.phase == CommandPhase.END:
-                self._player_component_velocity.velocity.x -= self.player_config["input_velocity"]
+                self._player_component_velocity.velocity.x = 0
 
         if c_input.name == "PLAYER_UP":
             if c_input.phase == CommandPhase.START:
                 self._player_component_velocity.velocity.y -= self.player_config["input_velocity"]
             elif c_input.phase == CommandPhase.END:
-                self._player_component_velocity.velocity.y += self.player_config["input_velocity"]
+                self._player_component_velocity.velocity.y = 0
 
         if c_input.name == "PLAYER_DOWN":
             if c_input.phase == CommandPhase.START:
                 self._player_component_velocity.velocity.y += self.player_config["input_velocity"]
             elif c_input.phase == CommandPhase.END:
-                self._player_component_velocity.velocity.y -= self.player_config["input_velocity"]
+                self._player_component_velocity.velocity.y = 0
+
+        if c_input.name == "PLAYER_FIRE":
+            print(self._player_component_transform.position.x)
+            print(self._player_component_transform.position.y)
+            create_bullet_square(
+                self.ecs_world,
+                self._player_component_transform.position,
+                self.bullet_config)

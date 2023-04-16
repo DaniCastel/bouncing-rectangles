@@ -6,6 +6,7 @@ from src.ecs.components.c_input_command import CInputCommand
 from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_velocity import CVelocity
+from src.ecs.components.tags.c_tag_bullet import CTagBullet
 from src.ecs.components.tags.c_tag_enemy import CTagEnemy
 from src.ecs.components.tags.c_tag_player import CTagPlayer
 
@@ -109,5 +110,23 @@ def create_input_player(
 
     world.add_component(
         input_fire,
-        CInputCommand("PLAYER_FIRE", pygame.MOUSEBUTTONDOWN)
+        CInputCommand("PLAYER_FIRE", pygame.K_SPACE)
     )
+
+
+def create_bullet_square(
+        world: esper.World,
+        position: pygame.Vector2,
+        bullet_config: dict):
+
+    size = pygame.Vector2(
+        bullet_config["size"]["x"],
+        bullet_config["size"]["y"])
+    color = pygame.Color(
+        bullet_config["color"]["r"],
+        bullet_config["color"]["g"],
+        bullet_config["color"]["b"])
+
+    velocity = pygame.Vector2(200, 200)
+    bullet_entity = create_square(world, size, position, velocity, color)
+    world.add_component(bullet_entity, CTagBullet())

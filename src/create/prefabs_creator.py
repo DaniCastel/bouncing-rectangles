@@ -1,6 +1,7 @@
 import random
 import pygame
 import esper
+from src.ecs.components.c_enemy_spawner import CEnemySpawner
 from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_velocity import CVelocity
@@ -42,6 +43,7 @@ def create_player_square(
     velocity = pygame.Vector2(0, 0)
     player_entity = create_square(world, size, position, velocity, color)
     world.add_component(player_entity, CTagPlayer)
+    return player_entity
 
 
 def create_enemy_square(
@@ -65,3 +67,12 @@ def create_enemy_square(
         random.choice([-velocity_range, velocity_range]))
     enemy_entity = create_square(world, size, position, velocity, color)
     world.add_component(enemy_entity, CTagEnemy)
+
+
+def create_enemy_spawner(
+        world: esper.World,
+        level_config: dict):
+    spawner_entity = world.create_entity()
+    world.add_component(
+        spawner_entity,
+        CEnemySpawner(level_config["enemy_spawn_events"]))

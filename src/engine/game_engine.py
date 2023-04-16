@@ -2,7 +2,7 @@ import json
 import pygame
 
 import esper
-from src.create.prefabs_creator import create_player_square, create_square
+from src.create.prefabs_creator import create_enemy_spawner, create_player_square, create_square
 from src.ecs.components.c_enemy_spawner import CEnemySpawner
 from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
@@ -50,16 +50,12 @@ class GameEngine:
         self._clean()
 
     def _create(self):
-        create_player_square(self.ecs_world, self.player_config,
-                             self.level_config["player_spawn"])
-        spawn_entity = self.ecs_world.create_entity()
-        self.ecs_world.add_component(spawn_entity, CEnemySpawner())
-
-        # pygame.time.set_timer(print("evento"), 10)
-        enemies_file = open('enemies.json')
-        enemies = json.load(enemies_file)
-
-        self.enemies = enemies
+        self._player_entity = create_player_square(self.ecs_world, self.player_config,
+                                                   self.level_config["player_spawn"])
+        self._player_component_velocity = self.ecs_world.component_for_entity(
+            self._player_entity, CVelocity)
+        create_enemy_spawner(self.ecs_world, self.level_config)
+        pass
 
     def _calculate_time(self):
         # previamente creamos el reloj en el init
@@ -83,7 +79,7 @@ class GameEngine:
         # modificamos la velocidad
         # agregamos enemigos
         system_enemy_spawner(self.ecs_world, self.delta_time,
-                             self.enemies, self.start_time)
+                             self.enemies_config, self.start_time)
         system_movement(self.ecs_world, self.delta_time)
         system_screen_bounce(self.ecs_world, self.screen)
 

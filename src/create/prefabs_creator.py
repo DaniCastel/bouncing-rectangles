@@ -43,7 +43,7 @@ def create_player_square(
         player_level_config["position"]["y"] - (size.y / 2))
     velocity = pygame.Vector2(0, 0)
     player_entity = create_square(world, size, position, velocity, color)
-    world.add_component(player_entity, CTagPlayer)
+    world.add_component(player_entity, CTagPlayer())
     return player_entity
 
 
@@ -67,7 +67,7 @@ def create_enemy_square(
         random.choice([-velocity_range, velocity_range]),
         random.choice([-velocity_range, velocity_range]))
     enemy_entity = create_square(world, size, position, velocity, color)
-    world.add_component(enemy_entity, CTagEnemy)
+    world.add_component(enemy_entity, CTagEnemy())
 
 
 def create_enemy_spawner(
@@ -82,7 +82,26 @@ def create_enemy_spawner(
 def create_input_player(
         world: esper.World):
     input_left = world.create_entity()
+    input_right = world.create_entity()
+    input_up = world.create_entity()
+    input_down = world.create_entity()
+
     world.add_component(
         input_left,
         CInputCommand("PLAYER_LEFT", pygame.K_LEFT)
+    )
+
+    world.add_component(
+        input_right,
+        CInputCommand("PLAYER_RIGHT", pygame.K_RIGHT)
+    )
+
+    world.add_component(
+        input_up,
+        CInputCommand("PLAYER_UP", pygame.K_UP)
+    )
+
+    world.add_component(
+        input_down,
+        CInputCommand("PLAYER_DOWN", pygame.K_DOWN)
     )

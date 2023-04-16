@@ -4,6 +4,7 @@ import pygame
 import esper
 from src.create.prefabs_creator import create_bullet_square, create_enemy_spawner, create_input_player, create_player_square, create_square
 from src.ecs.components.c_input_command import CInputCommand, CommandPhase
+from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_velocity import CVelocity
 from src.ecs.systems.s_bounce import system_screen_bounce
@@ -60,6 +61,8 @@ class GameEngine:
             self._player_entity, CVelocity)
         self._player_component_transform = self.ecs_world.component_for_entity(
             self._player_entity, CTransform)
+        self._player_component_size = self.ecs_world.component_for_entity(
+            self._player_entity, CSurface)
         create_enemy_spawner(self.ecs_world, self.level_config)
         create_input_player(self.ecs_world)
 
@@ -134,7 +137,15 @@ class GameEngine:
         if c_input.name == "PLAYER_FIRE":
             print(self._player_component_transform.position.x)
             print(self._player_component_transform.position.y)
+
+            size = self._player_component_size.surface.get_size()
+
+            print(size)
+
             create_bullet_square(
                 self.ecs_world,
-                self._player_component_transform.position,
+                pygame.Vector2(
+                    self._player_component_transform.position.x -
+                    (size[0] / 2),
+                    self._player_component_transform.position.x - (size[1] / 2)),
                 self.bullet_config)

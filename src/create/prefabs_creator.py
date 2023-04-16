@@ -110,7 +110,7 @@ def create_input_player(
 
     world.add_component(
         input_fire,
-        CInputCommand("PLAYER_FIRE", pygame.K_SPACE)
+        CInputCommand("PLAYER_FIRE", pygame.BUTTON_LEFT)
     )
 
 
@@ -127,6 +127,6 @@ def create_bullet_square(
         bullet_config["color"]["g"],
         bullet_config["color"]["b"])
 
-    velocity = pygame.Vector2(200, 200)
+    velocity = pygame.Vector2(bullet_config["velocity"])
     bullet_entity = create_square(world, size, position, velocity, color)
     world.add_component(bullet_entity, CTagBullet())

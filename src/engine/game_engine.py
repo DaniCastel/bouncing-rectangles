@@ -8,6 +8,7 @@ from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_velocity import CVelocity
 from src.ecs.systems.s_bounce import system_screen_bounce
+from src.ecs.systems.s_bullet_limits import system_bullet_limits
 from src.ecs.systems.s_collision_player_enemy import system_collision_player_enemy
 from src.ecs.systems.s_input_player import system_input_player
 from src.ecs.systems.s_movement import system_movement
@@ -93,6 +94,7 @@ class GameEngine:
         system_screen_bounce(self.ecs_world, self.screen)
         system_player_limits(self.ecs_world, self.screen,
                              self._player_component_velocity, self.player_config)
+        system_bullet_limits(self.ecs_world, self.screen)
         system_collision_player_enemy(
             self.ecs_world, self._player_entity, self.level_config)
         self.ecs_world._clear_dead_entities()

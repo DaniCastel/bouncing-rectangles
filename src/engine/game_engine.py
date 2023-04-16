@@ -7,6 +7,7 @@ from src.ecs.components.c_input_command import CInputCommand, CommandPhase
 from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_velocity import CVelocity
+from src.ecs.components.tags.c_tag_bullet import CTagBullet
 from src.ecs.systems.s_bounce import system_screen_bounce
 from src.ecs.systems.s_bullet_limits import system_bullet_limits_collision
 from src.ecs.systems.s_collision_player_enemy import system_collision_player_enemy
@@ -137,12 +138,14 @@ class GameEngine:
                 self._player_component_velocity.velocity.y = 0
 
         if c_input.name == "PLAYER_FIRE":
-            size = self._player_component_size.surface.get_size()
-            mouse_x, mouse_y = pygame.mouse.get_pos()
-            create_bullet_square(
-                self.ecs_world,
-                pygame.Vector2(
-                    self._player_component_transform.position.x +
-                    (size[0] / 2),
-                    self._player_component_transform.position.y + (size[1] / 2)),
-                self.bullet_config, mouse_x, mouse_y)
+            bullets = self.ecs_world.get_components(CTagBullet)
+            if (len(bullets) < self.level_config["player_spawn"]["max_bullets"]):
+                size = self._player_component_size.surface.get_size()
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                create_bullet_square(
+                    self.ecs_world,
+                    pygame.Vector2(
+                        self._player_component_transform.position.x +
+                        (size[0] / 2),
+                        self._player_component_transform.position.y + (size[1] / 2)),
+                    self.bullet_config, mouse_x, mouse_y)

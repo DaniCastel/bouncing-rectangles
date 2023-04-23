@@ -1,31 +1,21 @@
-from typing import Callable
-import pygame
 import esper
-from src.ecs.components.c_input_command import CInputCommand, CommandPhase
 from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.tags.c_tag_enemy import CTagEnemy
 
 
-def system_collision_player_enemy(
-        world: esper.World,
-        player_entity: int,
-        level_config: dict) -> None:
-
+def system_collision_player_enemy(world: esper.World, player_entity: int, level_cfg: dict):
     components = world.get_components(CSurface, CTransform, CTagEnemy)
-    player_transform = world.component_for_entity(player_entity, CTransform)
-    player_surface = world.component_for_entity(player_entity, CSurface)
+    pl_t = world.component_for_entity(player_entity, CTransform)
+    pl_s = world.component_for_entity(player_entity, CSurface)
 
-    player_square = player_surface.surface.get_rect(
-        topleft=player_transform.position)
+    pl_rect = CSurface.get_area_relative(pl_s.area, pl_t.position)
 
-    for enemy_entity, (component_surface, component_transform, _) in components:
-        enemy_square = component_surface.surface.get_rect(
-            topleft=component_transform.position)
-
-        if enemy_square.colliderect(player_square):
+    for enemy_entity, (c_s, c_t, _) in components:
+        ene_rect = CSurface.get_area_relative(c_s.area, c_t.position)
+        if ene_rect.colliderect(pl_rect):
             world.delete_entity(enemy_entity)
-            player_transform.position.x = level_config["player_spawn"]["position"]["x"] - \
-                player_surface.surface.get_width()/2
-            player_transform.position.y = level_config["player_spawn"]["position"]["y"] - \
-                player_surface.surface.get_height()/2
+            pl_t.position.x = level_cfg["player_spawn"]["position"]["x"] - \
+                pl_s.surface.get_width() / 2
+            pl_t.position.y = level_cfg["player_spawn"]["position"]["y"] - \
+                pl_s.surface.get_height() / 2

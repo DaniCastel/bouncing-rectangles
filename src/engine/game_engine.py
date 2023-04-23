@@ -10,6 +10,7 @@ from src.ecs.components.c_velocity import CVelocity
 from src.ecs.components.tags.c_tag_bullet import CTagBullet
 from src.ecs.systems.s_bounce import system_screen_bounce
 from src.ecs.systems.s_bullet_limits import system_bullet_limits_collision
+from src.ecs.systems.s_collision_enemy_bullet import system_collision_enemy_bullet
 from src.ecs.systems.s_collision_player_enemy import system_collision_player_enemy
 from src.ecs.systems.s_input_player import system_input_player
 from src.ecs.systems.s_movement import system_movement
@@ -32,6 +33,7 @@ class GameEngine:
         self.delta_time = 0
         # # mundo que maneja los componentes y estructuras, agregar y borrar entidades etc
         self.ecs_world = esper.World()
+        self.num_bullets = 0
 
     def _load_config_files(self):
         with open('assets/cfg/window.json', encoding="utf-8") as window_file:
@@ -93,12 +95,15 @@ class GameEngine:
         )
         system_movement(self.ecs_world, self.delta_time)
         system_screen_bounce(self.ecs_world, self.screen)
-        system_player_limits(self.ecs_world, self.screen,
-                             self._player_component_velocity, self.player_config)
+
+        system_player_limits(self.ecs_world, self.screen)
         system_bullet_limits_collision(self.ecs_world, self.screen)
+        system_collision_enemy_bullet(self.ecs_world)
+
         system_collision_player_enemy(
             self.ecs_world, self._player_entity, self.level_config)
         self.ecs_world._clear_dead_entities()
+        self.num_bullets = len(self.ecs_world.get_component(CTagBullet))
 
     def _draw(self):
         color = self.window_config["bg_color"]
@@ -137,15 +142,6 @@ class GameEngine:
             elif c_input.phase == CommandPhase.END:
                 self._player_component_velocity.velocity.y = 0
 
-        if c_input.name == "PLAYER_FIRE":
-            bullets = self.ecs_world.get_components(CTagBullet)
-            if (len(bullets) < self.level_config["player_spawn"]["max_bullets"]):
-                size = self._player_component_size.surface.get_size()
-                mouse_x, mouse_y = pygame.mouse.get_pos()
-                create_bullet_square(
-                    self.ecs_world,
-                    pygame.Vector2(
-                        self._player_component_transform.position.x +
-                        (size[0] / 2),
-                        self._player_component_transform.position.y + (size[1] / 2)),
-                    self.bullet_config, mouse_x, mouse_y)
+        if c_input.name == "PLAYER_FIRE" and self.num_bullets < self.level_config["player_spawn"]["max_bullets"]:
+            create_bullet_square(self.ecs_world, c_input.mouse_pos, self._player_component_transform.position,
+                                 self._player_component_size.area.size, self.bullet_config)

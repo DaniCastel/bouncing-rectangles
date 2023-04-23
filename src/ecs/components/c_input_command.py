@@ -1,4 +1,5 @@
 from enum import Enum
+import pygame
 
 
 class CInputCommand:
@@ -6,6 +7,7 @@ class CInputCommand:
         self.name = name
         self.key = key
         self.phase = CommandPhase.NA
+        self.mouse_pos = pygame.Vector2(0, 0)
 
 
 class CommandPhase(Enum):

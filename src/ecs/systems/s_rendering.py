@@ -18,4 +18,5 @@ def system_rendering(world: esper.World, screen: pygame.Surface):
     square_surface: CSurface
 
     for entity, (square_transform, square_surface) in components:
-        screen.blit(square_surface.surface, square_transform.position)
+        screen.blit(square_surface.surface,
+                    square_transform.position, area=square_surface.area)

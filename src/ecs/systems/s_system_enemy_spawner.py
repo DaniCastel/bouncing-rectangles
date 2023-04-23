@@ -1,36 +1,18 @@
 from random import randrange
-import random
-import pygame
 import esper
-from src.create.prefabs_creator import create_square
-from src.ecs.components.c_enemy_spawner import CEnemySpawner
+from src.create.prefabs_creator import create_enemy_square, create_square
+from src.ecs.components.c_enemy_spawner import CEnemySpawner, SpawnEventData
 
 
-def system_enemy_spawner(ecs_world: esper.World, delta_time, enemies, start_time):
-    components = ecs_world.get_components(CEnemySpawner)
-
-    enemy_spawner: CEnemySpawner
-    enemy_spawner = components[0][1][0]
-
-    current_seconds = pygame.time.get_ticks()/1000
-
-    for event in enemy_spawner.events:
-        if (current_seconds >= event.time and event.already_created == False):
-            enemy = enemies[event.enemy_type]
-            color = enemy["color"]
-
-            velocity_x = random.randint(
-                enemy["velocity_min"], enemy["velocity_max"])*positive_or_negative()
-            velocity_y = random.randint(
-                enemy["velocity_min"], enemy["velocity_max"])*positive_or_negative()
-
-            create_square(ecs_world, pygame.Vector2(enemy["size"]["x"], enemy["size"]["y"]), pygame.Vector2(
-                event.position["x"], event.position["y"]), pygame.Vector2(velocity_x, velocity_y), pygame.Color(color["r"], color["g"], color["b"]))
-            event.already_created = True
-
-
-def positive_or_negative():
-    if random.random() < 0.5:
-        return 1
-    else:
-        return -1
+def system_enemy_spawner(world: esper.World, enemies_data: dict, delta_time: float):
+    components = world.get_component(CEnemySpawner)
+    c_spw: CEnemySpawner
+    for _,  c_spw in components:
+        c_spw.current_time += delta_time
+        spw_evt: SpawnEventData
+        for spw_evt in c_spw.spawn_event_data:
+            if c_spw.current_time >= spw_evt.time and not spw_evt.triggered:
+                spw_evt.triggered = True
+                create_enemy_square(world,
+                                    spw_evt.position,
+                                    enemies_data[spw_evt.enemy_type])

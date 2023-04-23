@@ -1,10 +1,13 @@
 import esper
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_velocity import CVelocity
+from src.ecs.components.tags.c_tag_bullet import CTagBullet
+from src.ecs.components.tags.c_tag_enemy import CTagEnemy
 
 
 def system_movement(world: esper.World, delta_time: float):
-    components = world.get_components(CTransform, CVelocity)
+    components = world.get_components(
+        CTransform, CVelocity)
 
     square_transform: CTransform
     square_velocity: CVelocity

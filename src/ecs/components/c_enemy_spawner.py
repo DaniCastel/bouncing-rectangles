@@ -1,16 +1,19 @@
-import json
 import pygame
-
-from src.create.spawn_event_data import SpawnEventData
 
 
 class CEnemySpawner:
-    def __init__(self) -> None:
-        self.events = []
+    def __init__(self, spawn_events_data: dict) -> None:
+        self.current_time: float = 0
+        self.spawn_event_data: list[SpawnEventData] = []
+        for single_event in spawn_events_data:
+            self.spawn_event_data.append(SpawnEventData(single_event))
 
-        spawns_file = open('level_01.json')
-        spawns = json.load(spawns_file)["enemy_spawn_events"]
 
-        for spawn in spawns:
-            self.events.append(SpawnEventData(
-                spawn["time"], spawn["enemy_type"], spawn["position"]))
+class SpawnEventData:
+    def __init__(self, event_data: dict) -> None:
+        self.time: float = event_data["time"]
+        self.enemy_type: str = event_data["enemy_type"]
+        self.position: pygame.Vector2 = pygame.Vector2(
+            event_data["position"]["x"],
+            event_data["position"]["y"])
+        self.triggered = False

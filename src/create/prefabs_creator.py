@@ -49,18 +49,24 @@ def create_player_square(
     return player_entity
 
 
+def create_sprite(world: esper.World,
+                  position: pygame.Vector2,
+                  velocity: pygame.Vector2,
+                  surface: pygame.Surface) -> int:
+    sprite_entity = world.create_entity()
+    world.add_component(sprite_entity, CTransform(position))
+    world.add_component(sprite_entity, CVelocity(velocity))
+    world.add_component(sprite_entity, CSurface.from_surface(surface))
+
+    return sprite_entity
+
+
 def create_enemy_square(
         world: esper.World,
         position: pygame.Vector2,
         enemy_config: dict):
 
-    size = pygame.Vector2(
-        enemy_config["size"]["x"],
-        enemy_config["size"]["y"])
-    color = pygame.Color(
-        enemy_config["color"]["r"],
-        enemy_config["color"]["g"],
-        enemy_config["color"]["b"])
+    enemy_surface = pygame.image.load(enemy_config["image"]).convert_alpha()
 
     velocity_max = enemy_config["velocity_max"]
     velocity_min = enemy_config["velocity_min"]
@@ -68,7 +74,7 @@ def create_enemy_square(
     velocity = pygame.Vector2(
         random.choice([-velocity_range, velocity_range]),
         random.choice([-velocity_range, velocity_range]))
-    enemy_entity = create_square(world, size, position, velocity, color)
+    enemy_entity = create_sprite(world, position, velocity, enemy_surface)
     world.add_component(enemy_entity, CTagEnemy())
 
 
@@ -129,6 +135,8 @@ def create_bullet_square(
         bullet_config["color"]["r"],
         bullet_config["color"]["g"],
         bullet_config["color"]["b"])
+
+    # position = pygame.Vector2(player_position.x+player_size)
 
     distance_x = mouse_x - position.x
     distance_y = mouse_y - position.y

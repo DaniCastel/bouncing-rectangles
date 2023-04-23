@@ -1,19 +1,13 @@
+
 import esper
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_velocity import CVelocity
-from src.ecs.components.tags.c_tag_bullet import CTagBullet
-from src.ecs.components.tags.c_tag_enemy import CTagEnemy
 
+def system_movement(world:esper.World, delta_time:float):
+    components = world.get_components(CTransform, CVelocity)
 
-def system_movement(world: esper.World, delta_time: float):
-    components = world.get_components(
-        CTransform, CVelocity)
-
-    square_transform: CTransform
-    square_velocity: CVelocity
-
-    for entity, (square_transform, square_velocity) in components:
-        # lo unico que podemos cambiar para que el objeto se mueva es su posicion
-        # avanzamos en x a 100px por segundo (delta_time)
-        square_transform.position.x += square_velocity.velocity.x * delta_time
-        square_transform.position.y += square_velocity.velocity.y * delta_time
+    c_t:CTransform
+    c_v:CVelocity
+    for _, (c_t, c_v) in components:
+        c_t.pos.x += c_v.vel.x * delta_time
+        c_t.pos.y += c_v.vel.y * delta_time

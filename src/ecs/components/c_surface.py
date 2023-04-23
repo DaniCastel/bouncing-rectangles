@@ -3,9 +3,9 @@ import pygame
 
 class CSurface:
     def __init__(self, size: pygame.Vector2, color: pygame.Color) -> None:
-        self.surface = pygame.Surface(size)
-        self.surface.fill(color)
-        self.area = self.surface.get_rect()
+        self.surf = pygame.Surface(size)
+        self.surf.fill(color)
+        self.area = self.surf.get_rect()
 
     @classmethod
     def from_surface(cls, surface: pygame.Surface):

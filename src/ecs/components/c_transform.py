@@ -2,5 +2,6 @@ import pygame
 
 
 class CTransform:
-    def __init__(self, position: pygame.Vector2) -> None:
-        self.position = position
+    def __init__(self, pos: pygame.Vector2) -> None:
+        self.pos = pos
+        self.origin = pos
